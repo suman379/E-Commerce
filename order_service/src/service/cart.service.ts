@@ -1,5 +1,6 @@
-import { CartRequestInput } from "../dto/cartrequest.dto";
-import { CartRepositoryType } from "../types/repository.type";
+import { CartLineItem } from "../db/schema";
+import { CartEditRequestInput, CartRequestInput } from "../dto/cartrequest.dto";
+import { CartRepositoryType } from "../repository/cart.repository";
 import { NotFoundError } from "../utils";
 import { GetProductDetails } from "../utils/broker";
 
@@ -10,21 +11,35 @@ export const CreateCart = async (input: CartRequestInput, repo: CartRepositoryTy
   if (product.stock < input.qty) {
     throw new NotFoundError("product is out of stock");
   }
-  //const data = await repo.create(input);
-  return product;
+  // find if the product is already in cart
+  const lineItem = await repo.findCartByProductId(input.customerId, input.productId);
+  if (lineItem) {
+    return repo.updateCart(lineItem.id, lineItem.qty + input.qty);
+  }
+
+  return await repo.createCart(input.customerId, {
+    productId: product.id,
+    price: product.price.toString(),
+    qty: input.qty,
+    itemName: product.name,
+    variant: product.variant,
+  } as CartLineItem);
 };
 
-export const GetCart = async (input: any, repo: CartRepositoryType) => {
-  const data = await repo.find(input);
+export const GetCart = async (id: number, repo: CartRepositoryType) => {
+  const cart = await repo.findCart(id);
+  if (!cart) {
+    throw new NotFoundError("cart does not exist");
+  }
+  return cart;
+};
+
+export const EditCart = async (input: CartEditRequestInput, repo: CartRepositoryType) => {
+  const data = await repo.updateCart(input.id, input.qty);
   return data;
 };
 
-export const EditCart = async (input: any, repo: CartRepositoryType) => {
-  const data = await repo.update(input);
-  return data;
-};
-
-export const DeleteCart = async (input: any, repo: CartRepositoryType) => {
-  const data = await repo.delete(input);
+export const DeleteCart = async (id: number, repo: CartRepositoryType) => {
+  const data = await repo.deleteCart(id);
   return data;
 };

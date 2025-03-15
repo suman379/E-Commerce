@@ -22,17 +22,23 @@ router.post("/cart", async (req: Request, res: Response, next: NextFunction) => 
 });
 
 router.get("/cart", async (req: Request, res: Response, next: NextFunction) => {
-  const response = await service.GetCart(req.body, repo);
+  try {
+    const response = await service.GetCart(req.body.customerId, repo);
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/cart/:lineItemId", async (req: Request, res: Response, next: NextFunction) => {
+  const lineItemId = +req.params.lineItemId;
+  const response = await service.EditCart({ id: lineItemId, qty: req.body.qty }, repo);
   res.status(200).json(response);
 });
 
-router.patch("/cart", async (req: Request, res: Response, next: NextFunction) => {
-  const response = await service.EditCart(req.body, repo);
-  res.status(200).json(response);
-});
-
-router.delete("/cart", async (req: Request, res: Response, next: NextFunction) => {
-  const response = await service.DeleteCart(req.body, repo);
+router.delete("/cart/:lineItemId", async (req: Request, res: Response, next: NextFunction) => {
+  const lineItemId = +req.params.lineItemId;
+  const response = await service.DeleteCart(lineItemId, repo);
   res.status(200).json(response);
 });
 

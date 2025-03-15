@@ -20,8 +20,8 @@ export class UpdateProductRequest {
   name?: string;
   description?: string;
 
-  @Min(1)
   price?: number;
 
+  @IsNumber()
   stock?: number;
 }

@@ -1,7 +1,8 @@
-POST http://localhost:9000/cart
-Content-Type: "application/json"
+POST http://localhost:9002/cart
+Content-Type: application/json
 
 {
-    "item" : "Macbook Pro",
-    "price" : 1200
+    "productId" : 3,
+    "customerId" : 2,
+    "qty" : 1000
 }

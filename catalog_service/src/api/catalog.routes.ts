@@ -18,8 +18,7 @@ router.post("/products", async (req: Request, res: Response, next: NextFunction)
       res.status(201).send(data);
     }
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json(err.message);
+    next(error);
   }
 });
 
@@ -36,8 +35,7 @@ router.patch("/products/:id", async (req: Request, res: Response, next: NextFunc
       res.status(200).send(data);
     }
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json(err.message);
+    next(error);
   }
 });
 
@@ -59,8 +57,7 @@ router.get("/products/:id", async (req: Request, res: Response, next: NextFuncti
     const data = await catalogService.getProduct(id);
     res.status(200).send(data);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json(err.message);
+    next(error);
   }
 });
 
@@ -70,8 +67,7 @@ router.delete("/products/:id", async (req: Request, res: Response, next: NextFun
     const data = await catalogService.deleteProduct(id);
     res.status(200).send(data);
   } catch (error) {
-    const err = error as Error;
-    res.status(500).json(err.message);
+    next(error);
   }
 });
 export default router;
